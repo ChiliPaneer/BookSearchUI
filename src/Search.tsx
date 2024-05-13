@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Form from 'react-bootstrap/Form';
+import { Doc, Result } from './types';
+import ResultsView from './Results';
 
 export default function Search() {
   const [results, setResults] = useState<Result | null>(null);
@@ -11,16 +13,17 @@ export default function Search() {
   }
 
   const submitQuery = async () => {
-      console.log('search...');
       try {
-          const query_string = query.replace(/ /g, '+');
-          const response = await fetch(`https://openlibrary.org/search.json?q=${query_string}`)
+          const response = await fetch(`https://openlibrary.org/search.json?q=${query.replace(/ /g, '+')}`)
+
           if (!response.ok) {
             throw new Error('Search could not be made, try again later');
           }
-          const json : Result = await response.json();
-          setResults(json);
+
+          const data : Result = await response.json();
+          setResults(data);
         } catch (err) {
+
           console.log("Search could not be made");
         }
       };
@@ -57,69 +60,10 @@ export default function Search() {
       </Form.Text>
       </Form>
       <p>{query}</p>
-      <p>{(results != null)? results.numFound : "Results:" }</p>
+
+      // <p>{(results != null)? results.numFound : "Results:" }</p>
+      {(results != null)? <ResultsView results={results}/> : "No Results"}
     </>
   )
-}
-
-
-
-export interface Result {
-    numFound:      number;
-    start:         number;
-    numFoundExact: boolean;
-    docs:          Doc[];
-    num_found:     number;
-    q:             string;
-    offset:        null;
-}
-
-export interface Doc {
-    author_key:              string[];
-    author_name:             string[];
-    cover_i:                 number;
-    ebook_access:            string;
-    ebook_count_i:           number;
-    edition_count:           number;
-    edition_key:             string[];
-    first_publish_year:      number;
-    first_sentence:          string[];
-    format:                  string[];
-    has_fulltext:            boolean;
-    ia:                      string[];
-    ia_collection:           string[];
-    ia_collection_s:         string;
-    isbn:                    string[];
-    key:                     string;
-    language:                string[];
-    last_modified_i:         number;
-    number_of_pages_median:  number;
-    printdisabled_s:         string;
-    public_scan_b:           boolean;
-    publish_date:            string[];
-    publish_place:           string[];
-    publish_year:            number[];
-    publisher:               string[];
-    seed:                    string[];
-    title:                   string;
-    title_suggest:           string;
-    title_sort:              string;
-    type:                    string;
-    subject:                 string[];
-    place:                   string[];
-    person:                  string[];
-    readinglog_count:        number;
-    want_to_read_count:      number;
-    currently_reading_count: number;
-    already_read_count:      number;
-    publisher_facet:         string[];
-    person_key:              string[];
-    place_key:               string[];
-    person_facet:            string[];
-    subject_facet:           string[];
-    _version_:               number;
-    place_facet:             string[];
-    author_facet:            string[];
-    subject_key:             string[];
 }
 
