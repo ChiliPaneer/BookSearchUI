@@ -1,12 +1,47 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Form from 'react-bootstrap/Form';
 
 export default function Search() {
-  const [testValue, setTestValue] = useState('');
+  const [results, setResults] = useState<Result | null>(null);
+  const [query, setQuery] = useState('');
+  const [timer, setTimer] = useState<NodeJS.Timeout | null>(null);
+
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    alert('hi');
-    setTestValue(event.target.value);
+    setQuery(event.target.value);
   }
+
+  const submitQuery = async () => {
+      console.log('search...');
+      try {
+          const query_string = query.replace(/ /g, '+');
+          const response = await fetch(`https://openlibrary.org/search.json?q=${query_string}`)
+          if (!response.ok) {
+            throw new Error('Search could not be made, try again later');
+          }
+          const json : Result = await response.json();
+          setResults(json);
+        } catch (err) {
+          console.log("Search could not be made");
+        }
+      };
+
+  useEffect(() => {
+    if(timer) {
+      clearTimeout(timer);
+    }
+
+    const newTimer = setTimeout(() => {
+      if (query) {
+        submitQuery();
+      }
+    }, 500);
+
+    setTimer(newTimer);
+
+    return () => clearTimeout(newTimer);
+    }, [query]);
+
+
   return (
     <>
     <Form>
@@ -21,7 +56,8 @@ export default function Search() {
       Type your book query above
       </Form.Text>
       </Form>
-      <p>{testValue}</p>
+      <p>{query}</p>
+      <p>{(results != null)? results.numFound : "Results:" }</p>
     </>
   )
 }
