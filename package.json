@@ -1,7 +1,7 @@
 {
   "name": "booksearch",
+  "homepage": "https://chilipaneer.github.io/BookSearchUI/",
   "version": "0.1.0",
-  "homepage" "https://chilipaneer.github.io/BookSearchUI/",
   "private": true,
   "dependencies": {
     "@testing-library/jest-dom": "^5.17.0",
