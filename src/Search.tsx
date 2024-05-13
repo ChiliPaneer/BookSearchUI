@@ -5,11 +5,17 @@ import ResultsView from './Results';
 
 export default function Search() {
   const [results, setResults] = useState<Result | null>(null);
+  const [sortByYear, setSortByYear] = useState<boolean>(false);
   const [query, setQuery] = useState('');
   const [timer, setTimer] = useState<NodeJS.Timeout | null>(null);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
+  }
+
+  const style = {
+    marginLeft: '40px', 
+    marignTop: '60px',
   }
 
   const submitQuery = async () => {
@@ -37,17 +43,19 @@ export default function Search() {
       if (query) {
         submitQuery();
       }
-    }, 500);
+    }, 400);
 
     setTimer(newTimer);
 
     return () => clearTimeout(newTimer);
     }, [query]);
 
+  const toggleSort = () => setSortByYear(!sortByYear);
+
 
   return (
     <>
-    <Form>
+    <Form style={style}>
       <Form.Label htmlFor="bookSearch">Book Search</Form.Label>
       <Form.Control
         type="text"
@@ -59,10 +67,19 @@ export default function Search() {
       Type your book query above
       </Form.Text>
       </Form>
-      <p>{query}</p>
 
-      // <p>{(results != null)? results.numFound : "Results:" }</p>
-      {(results != null)? <ResultsView results={results}/> : "No Results"}
+      <Form style={style}>
+      <Form.Check
+      type="switch"
+      id="sorting-toggle"
+      label="Sort By Year"
+      checked={sortByYear}
+      onChange={toggleSort}
+      />
+      </Form>
+
+     <p style={style}>{(results != null)? results.numFound + " results": "Results:" }</p>
+      {results ? <ResultsView results={results} sortByYear={sortByYear}/> : "No Results"}
     </>
   )
 }
