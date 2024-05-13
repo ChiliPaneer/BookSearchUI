@@ -1,18 +1,27 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Form from 'react-bootstrap/Form';
 
 export default function Search() {
+  const [testValue, setTestValue] = useState('');
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    alert('hi');
+    setTestValue(event.target.value);
+  }
   return (
     <>
+    <Form>
       <Form.Label htmlFor="bookSearch">Book Search</Form.Label>
       <Form.Control
         type="text"
         id="book_query"
+        onChange={handleChange}
         aria-describedby="bookSearchBar"
       />
       <Form.Text id="bookSearchQuery" muted>
       Type your book query above
       </Form.Text>
+      </Form>
+      <p>{testValue}</p>
     </>
   )
 }
